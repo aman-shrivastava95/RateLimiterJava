@@ -15,7 +15,6 @@ public class FixedWindowRateLimiter<T> implements RateLimiter<T> {
     private final Long window_ms ;
     private final Map<T, Window> store = new HashMap<>();
 
-
     @Override
     public  synchronized boolean  allow(T key) {
         long currentTimeInMillis = System.currentTimeMillis();
