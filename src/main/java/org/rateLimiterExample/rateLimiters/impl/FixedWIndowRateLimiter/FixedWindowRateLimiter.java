@@ -28,7 +28,7 @@ public class FixedWindowRateLimiter<T> implements RateLimiter<T> {
         if (userWindow.getRequestCount() >= maxRequestPerWindow){
             return false ;// request not allowed
         }
-        //update the window
+        //update the current window
         userWindow.setRequestCount(userWindow.getRequestCount() + 1);
         store.put(key, userWindow);
         return true ;
