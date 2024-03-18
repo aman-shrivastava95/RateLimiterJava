@@ -11,7 +11,7 @@ public class RateLimitedService {
         if(rateLimiter.allow(request.getClientId())) {
             System.out.println("Request served for client id "+ request.getClientId() + ".");
         }else{
-            //in case of api return 429
+            //in case of http endpoint return 429
             System.out.println("Rate limit exceeded for client id " + request.getClientId() + "!!!!");
         }
     }
