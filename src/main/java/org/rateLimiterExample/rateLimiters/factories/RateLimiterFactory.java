@@ -1,15 +1,32 @@
 package org.rateLimiterExample.rateLimiters.factories;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.rateLimiterExample.rateLimiters.api.RateLimiter;
 import org.rateLimiterExample.rateLimiters.constants.RateLimiterConstants;
 import org.rateLimiterExample.rateLimiters.impl.FixedWIndowRateLimiter.FixedWindowRateLimiter;
+import org.rateLimiterExample.rateLimiters.impl.SlidingWindowRateLimiter;
 import org.rateLimiterExample.rateLimiters.models.Strategy;
 
+import java.util.Map;
 import java.util.Properties;
 
 
 
 public class RateLimiterFactory<T> {
+
+    @AllArgsConstructor
+    @Getter
+    private static class WindowConfig{
+        int max_request ;
+        Long window_time ;
+    }
+
+    private static WindowConfig getCommonWindowConfigs(Properties config){
+        int max_request = Integer.parseInt(config.getProperty(RateLimiterConstants.MAX_REQUEST));
+        Long window_ms = Long.parseLong(config.getProperty(RateLimiterConstants.TIME_WINDOW_MS));
+        return new WindowConfig(max_request, window_ms) ;
+    }
 
     private RateLimiterFactory(){
     }
@@ -18,19 +35,18 @@ public class RateLimiterFactory<T> {
 
         switch (strategy) {
             case FIXED_WINDOW :
-                int max_request = Integer.parseInt(config.getProperty(RateLimiterConstants.MAX_REQUEST));
-                Long window_ms = Long.parseLong(config.getProperty(RateLimiterConstants.TIME_WINDOW_MS));
-                rateLimiter = new FixedWindowRateLimiter<T>(max_request, window_ms);
+                WindowConfig fixedWindowConfig = getCommonWindowConfigs(config);
+                rateLimiter = new FixedWindowRateLimiter<T>(fixedWindowConfig.getMax_request(), fixedWindowConfig.getWindow_time());
                 break;
             case SLIDING_WINDOW:
+                WindowConfig slidingWindowConfig = getCommonWindowConfigs(config);
+                rateLimiter = new SlidingWindowRateLimiter<T>(slidingWindowConfig.getMax_request(), slidingWindowConfig.getWindow_time());
                 break;
             case TOKEN_BUCKET:
                 break;
             default:
 
         }
-
         return rateLimiter ;
     }
-
 }

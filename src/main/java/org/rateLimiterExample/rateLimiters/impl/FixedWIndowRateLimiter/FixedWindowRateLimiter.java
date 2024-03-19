@@ -19,13 +19,13 @@ public class FixedWindowRateLimiter<T> implements RateLimiter<T> {
     public  synchronized boolean  allow(T key) {
         long currentTimeInMillis = System.currentTimeMillis();
         Window userWindow = store.get(key) ;
-        //create new window if the window doesn't exist or window has expired
+
         if (userWindow == null || currentTimeInMillis - userWindow.getStartTime() > window_ms ){
             userWindow =  new Window(currentTimeInMillis, 0) ;
         }
-        System.out.println(userWindow.getRequestCount());
+
         if (userWindow.getRequestCount() >= maxRequestPerWindow){
-            return false ;// request not allowed
+            return false ;
         }
         //update the current window
         userWindow.setRequestCount(userWindow.getRequestCount() + 1);
