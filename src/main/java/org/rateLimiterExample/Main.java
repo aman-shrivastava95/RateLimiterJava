@@ -8,10 +8,12 @@ import org.rateLimiterExample.rateLimiters.models.ClientRequest;
 import org.rateLimiterExample.rateLimiters.models.Strategy;
 
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         System.out.println("Hello world!");
 
         //configure rate limiter
@@ -23,10 +25,14 @@ public class Main {
 
         //configure the service
         RateLimitedService service =  new RateLimitedService(slidingWindowRateLimiter) ;
-        //TODO: start initiating service from thread once
 
-        for(int i = 1 ; i <= 6 ; i++ ){
-            service.serveRequest(new ClientRequest("user1", "user1"));
+
+        ExecutorService executorService = Executors.newFixedThreadPool(8) ;
+        for(int i = 1 ; i <= 8 ; i++ ){
+            executorService.execute( () -> service.serveRequest(new ClientRequest("user1", "user1")));
         }
+        Thread.sleep(10000);
+        service.serveRequest(new ClientRequest("user1", "user1"));
+        executorService.shutdown();
     }
 }
