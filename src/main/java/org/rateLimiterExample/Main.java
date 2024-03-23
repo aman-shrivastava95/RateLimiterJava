@@ -23,16 +23,21 @@ public class Main {
         RateLimiter<String> fixedWindowRateLimiter = RateLimiterFactory.<String>getRateLimiter(Strategy.FIXED_WINDOW, rateLimitConfig) ;
         RateLimiter<String> slidingWindowRateLimiter = RateLimiterFactory.<String>getRateLimiter(Strategy.SLIDING_WINDOW, rateLimitConfig) ;
 
+        rateLimitConfig.setProperty(RateLimiterConstants.REFILL_PERIOD, "1000" );
+        RateLimiter<String> tokenBucketRateLimiter = RateLimiterFactory.<String>getRateLimiter(Strategy.TOKEN_BUCKET, rateLimitConfig) ;
         //configure the service
-        RateLimitedService service =  new RateLimitedService(slidingWindowRateLimiter) ;
+        RateLimitedService service =  new RateLimitedService(tokenBucketRateLimiter) ;
 
 
-        ExecutorService executorService = Executors.newFixedThreadPool(8) ;
-        for(int i = 1 ; i <= 8 ; i++ ){
-            executorService.execute( () -> service.serveRequest(new ClientRequest("user1", "user1")));
-        }
-        Thread.sleep(10000);
-        service.serveRequest(new ClientRequest("user1", "user1"));
-        executorService.shutdown();
+//        ExecutorService executorService = Executors.newFixedThreadPool(8) ;
+//        for(int i = 1 ; i <= 8 ; i++ ){
+//            executorService.execute( () -> service.serveRequest(new ClientRequest("user1", "user1")));
+//        }
+//        Thread.sleep(10000);
+//        executorService.shutdown();
+         for (int i=0; i<10; i++){
+             service.serveRequest(new ClientRequest("user1","user1"));
+             Thread.sleep(500);
+         }
     }
 }

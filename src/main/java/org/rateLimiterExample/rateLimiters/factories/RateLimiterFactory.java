@@ -6,6 +6,7 @@ import org.rateLimiterExample.rateLimiters.api.RateLimiter;
 import org.rateLimiterExample.rateLimiters.constants.RateLimiterConstants;
 import org.rateLimiterExample.rateLimiters.impl.FixedWIndowRateLimiter.FixedWindowRateLimiter;
 import org.rateLimiterExample.rateLimiters.impl.SlidingWindowRateLimiter;
+import org.rateLimiterExample.rateLimiters.impl.TokenBucketRateLimiter.TokenBucketRateLimiter;
 import org.rateLimiterExample.rateLimiters.models.Strategy;
 
 import java.util.Map;
@@ -43,6 +44,9 @@ public class RateLimiterFactory<T> {
                 rateLimiter = new SlidingWindowRateLimiter<T>(slidingWindowConfig.getMax_request(), slidingWindowConfig.getWindow_time());
                 break;
             case TOKEN_BUCKET:
+                long capacity = Long.parseLong(config.getProperty(RateLimiterConstants.MAX_REQUEST)) ;
+                long refillPeriod = Long.parseLong(config.getProperty(RateLimiterConstants.REFILL_PERIOD)) ;
+                rateLimiter = new TokenBucketRateLimiter<T>(capacity, refillPeriod) ;
                 break;
             default:
 
