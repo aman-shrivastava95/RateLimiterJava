@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.rateLimiterExample.rateLimiters.api.RateLimiter;
 import org.rateLimiterExample.rateLimiters.constants.RateLimiterConstants;
 import org.rateLimiterExample.rateLimiters.impl.FixedWIndowRateLimiter.FixedWindowRateLimiter;
+import org.rateLimiterExample.rateLimiters.impl.LeakyBucketRateLimiter.LeakyBucketRateLimiter;
 import org.rateLimiterExample.rateLimiters.impl.SlidingWindowRateLimiter;
 import org.rateLimiterExample.rateLimiters.impl.TokenBucketRateLimiter.TokenBucketRateLimiter;
 import org.rateLimiterExample.rateLimiters.models.Strategy;
@@ -48,6 +49,10 @@ public class RateLimiterFactory<T> {
                 long refillPeriod = Long.parseLong(config.getProperty(RateLimiterConstants.REFILL_PERIOD)) ;
                 rateLimiter = new TokenBucketRateLimiter<T>(capacity, refillPeriod) ;
                 break;
+            case LEAKY_BUCKET:
+                long bucketCapacity =  Long.parseLong(config.getProperty(RateLimiterConstants.BUCKET_CAPACITY));
+                long leakRate =  Long.parseLong(config.getProperty(RateLimiterConstants.BUCKET_LEAK_RATE));
+                rateLimiter = new LeakyBucketRateLimiter<>(bucketCapacity, leakRate) ;
             default:
 
         }

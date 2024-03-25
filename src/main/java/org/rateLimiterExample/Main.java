@@ -24,9 +24,12 @@ public class Main {
         RateLimiter<String> slidingWindowRateLimiter = RateLimiterFactory.<String>getRateLimiter(Strategy.SLIDING_WINDOW, rateLimitConfig) ;
 
         rateLimitConfig.setProperty(RateLimiterConstants.REFILL_PERIOD, "1000" );
+        rateLimitConfig.setProperty(RateLimiterConstants.BUCKET_CAPACITY, "5") ;
+        rateLimitConfig.setProperty(RateLimiterConstants.BUCKET_LEAK_RATE,"1") ;
         RateLimiter<String> tokenBucketRateLimiter = RateLimiterFactory.<String>getRateLimiter(Strategy.TOKEN_BUCKET, rateLimitConfig) ;
+        RateLimiter<String> leakyBucketRateLimiter = RateLimiterFactory.<String>getRateLimiter(Strategy.LEAKY_BUCKET,rateLimitConfig);
         //configure the service
-        RateLimitedService service =  new RateLimitedService(tokenBucketRateLimiter) ;
+        RateLimitedService service =  new RateLimitedService(leakyBucketRateLimiter) ;
 
 
 //        ExecutorService executorService = Executors.newFixedThreadPool(8) ;
@@ -37,7 +40,7 @@ public class Main {
 //        executorService.shutdown();
          for (int i=0; i<10; i++){
              service.serveRequest(new ClientRequest("user1","user1"));
-             Thread.sleep(500);
+             Thread.sleep(500) ;
          }
     }
 }
