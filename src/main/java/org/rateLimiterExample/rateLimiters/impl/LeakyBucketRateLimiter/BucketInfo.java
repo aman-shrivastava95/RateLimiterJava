@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
+
 @AllArgsConstructor
 @Getter
 @Setter
 public class BucketInfo {
     private long currentTokenCount;
-    private long lastUpdatedTime ;
+    private Instant lastUpdatedTime ;
 }

@@ -2,6 +2,8 @@ package org.rateLimiterExample.rateLimiters.impl.LeakyBucketRateLimiter;
 
 import org.rateLimiterExample.rateLimiters.api.RateLimiter;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,7 +19,7 @@ public class LeakyBucketRateLimiter<T> implements RateLimiter<T> {
 
     @Override
     public synchronized boolean allow(T key) {
-        long currentTime = System.currentTimeMillis();
+        Instant currentTime = Instant.now() ;
         BucketInfo userBucket = userBucketMap.computeIfAbsent(key, k -> new BucketInfo( 0, currentTime)) ;
 
         updateBucket(userBucket, currentTime);
@@ -28,9 +30,9 @@ public class LeakyBucketRateLimiter<T> implements RateLimiter<T> {
         return false;
     }
 
-    private void updateBucket(BucketInfo userBucket, long currentTime) {
-      long elapsedTime = currentTime - userBucket.getLastUpdatedTime() ;
-      long toLeak = elapsedTime * leakRate / 1000 ;
+    private void updateBucket(BucketInfo userBucket, Instant currentTime) {
+      long elapsedTime = Duration.between(userBucket.getLastUpdatedTime(), currentTime).toSeconds() ;
+      long toLeak = elapsedTime * leakRate ;
       if(toLeak > 0){
           userBucket.setLastUpdatedTime(currentTime);
       }
