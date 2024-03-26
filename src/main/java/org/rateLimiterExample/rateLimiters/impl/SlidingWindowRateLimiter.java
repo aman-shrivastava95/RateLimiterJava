@@ -23,7 +23,7 @@ public class SlidingWindowRateLimiter<T> implements RateLimiter<T> {
         Deque<Long> userWindow = userWindowMap.computeIfAbsent(key, k-> new ConcurrentLinkedDeque<>());
         //remove all the  requests in the queue which have expired
         Long currentTime = System.currentTimeMillis();
-        //this need to be atomic,, other there will be race conditions in properly updating the window
+        //this need to be atomic, other there will be race conditions in properly updating the window
         lock.lock();
         try{
             while(!userWindow.isEmpty() && currentTime  - userWindow.peekFirst() > window_ms){

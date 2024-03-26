@@ -19,7 +19,7 @@ public class Main {
         //configure rate limiter
         Properties rateLimitConfig = new Properties();
         rateLimitConfig.setProperty(RateLimiterConstants.MAX_REQUEST, "5");
-        rateLimitConfig.setProperty(RateLimiterConstants.TIME_WINDOW_MS,"10000");
+        rateLimitConfig.setProperty(RateLimiterConstants.TIME_WINDOW_MS,"5");
         RateLimiter<String> fixedWindowRateLimiter = RateLimiterFactory.<String>getRateLimiter(Strategy.FIXED_WINDOW, rateLimitConfig) ;
         RateLimiter<String> slidingWindowRateLimiter = RateLimiterFactory.<String>getRateLimiter(Strategy.SLIDING_WINDOW, rateLimitConfig) ;
 
@@ -28,8 +28,9 @@ public class Main {
         rateLimitConfig.setProperty(RateLimiterConstants.BUCKET_LEAK_RATE,"1") ;
         RateLimiter<String> tokenBucketRateLimiter = RateLimiterFactory.<String>getRateLimiter(Strategy.TOKEN_BUCKET, rateLimitConfig) ;
         RateLimiter<String> leakyBucketRateLimiter = RateLimiterFactory.<String>getRateLimiter(Strategy.LEAKY_BUCKET,rateLimitConfig);
+        RateLimiter<String> customRateLimiter =  RateLimiterFactory.<String>getRateLimiter(Strategy.CUSTOM_RATE_LIMITER, rateLimitConfig);
         //configure the service
-        RateLimitedService service =  new RateLimitedService(leakyBucketRateLimiter) ;
+        RateLimitedService service =  new RateLimitedService(customRateLimiter) ;
 
 
 //        ExecutorService executorService = Executors.newFixedThreadPool(8) ;
@@ -38,9 +39,21 @@ public class Main {
 //        }
 //        Thread.sleep(10000);
 //        executorService.shutdown();
-         for (int i=0; i<10; i++){
+         for (int i=0; i<3; i++){
              service.serveRequest(new ClientRequest("user1","user1"));
-             Thread.sleep(500) ;
          }
+         Thread.sleep(5000);
+        for (int i=0; i< 8; i++){
+            service.serveRequest(new ClientRequest("user1","user1"));
+        }
+        Thread.sleep(5000);
+        System.out.println("#######################");
+        for (int i=0; i<2; i++){
+            service.serveRequest(new ClientRequest("user1","user1"));
+        }
+        Thread.sleep(5000);
+        for (int i=0; i<9; i++){
+            service.serveRequest(new ClientRequest("user1","user1"));
+        }
     }
 }

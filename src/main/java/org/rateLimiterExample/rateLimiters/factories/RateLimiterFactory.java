@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.rateLimiterExample.rateLimiters.api.RateLimiter;
 import org.rateLimiterExample.rateLimiters.constants.RateLimiterConstants;
+import org.rateLimiterExample.rateLimiters.impl.CustomRateLimiter.CustomRateLimiter;
 import org.rateLimiterExample.rateLimiters.impl.FixedWIndowRateLimiter.FixedWindowRateLimiter;
 import org.rateLimiterExample.rateLimiters.impl.LeakyBucketRateLimiter.LeakyBucketRateLimiter;
 import org.rateLimiterExample.rateLimiters.impl.SlidingWindowRateLimiter;
@@ -53,6 +54,10 @@ public class RateLimiterFactory<T> {
                 long bucketCapacity =  Long.parseLong(config.getProperty(RateLimiterConstants.BUCKET_CAPACITY));
                 long leakRate =  Long.parseLong(config.getProperty(RateLimiterConstants.BUCKET_LEAK_RATE));
                 rateLimiter = new LeakyBucketRateLimiter<>(bucketCapacity, leakRate) ;
+            case CUSTOM_RATE_LIMITER:
+                WindowConfig customConfig = getCommonWindowConfigs(config);
+                rateLimiter = new CustomRateLimiter<T>(customConfig.getMax_request(), customConfig.getWindow_time(), 5);
+                break ;
             default:
 
         }
